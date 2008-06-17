@@ -1,7 +1,7 @@
 "
 " Git branch info
-" Last change: June 13 2008
-" Version> 0.0.5
+" Last change: June 17 2008
+" Version> 0.0.6
 " Maintainer: Eustáquio 'TaQ' Rangel
 " License: GPL
 " URL: git://github.com/taq/vim-git-branch-info.git
@@ -204,7 +204,12 @@ endfunction
 
 function GitBranchInfoTokens()
 	if empty(b:git_dir)
+		let s:current = ''
 		return [exists("g:git_branch_status_nogit") ? g:git_branch_status_nogit : "No git."]
+	endif
+	if !filereadable(b:git_dir."/HEAD")
+		let s:current = ''
+		return [s:current,[],[]]
 	endif
 	let s:current	= split(split(readfile(b:git_dir."/HEAD",'',1)[0])[1],"/")[2]
 	if exists("g:git_branch_status_head_current")
