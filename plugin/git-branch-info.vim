@@ -1,7 +1,7 @@
 "
 " Git branch info
-" Last change: June 17 2008
-" Version> 0.0.6
+" Last change: June 19 2008
+" Version> 0.0.7
 " Maintainer: Eustáquio 'TaQ' Rangel
 " License: GPL
 " URL: git://github.com/taq/vim-git-branch-info.git
@@ -68,27 +68,48 @@ let b:git_load_branch = ""
 autocmd BufEnter * call GitBranchInfoInit()
 autocmd BufWriteCmd * call GitBranchInfoWriteCheck()
 
+function GitBranchInfoCheckGitDir()
+	return exists("b:git_dir") && !empty(b:git_dir)
+endfunction
+
+function GitBranchInfoCheckReadable()
+	return filereadable(b:git_dir."/HEAD")
+endfunction
+
 function GitBranchInfoWriteCheck()
-	" not controlled by Git, get out
-	if empty(b:git_dir)
+	" not controlled by Git, write this thing!
+	if !GitBranchInfoCheckGitDir()
 		exec "write"
 		return 1
 	endif
+
+	" just write normal buffers
+	let l:buftype = getbufvar(bufnr("%"),'&buftype')
+	if strlen(l:buftype)>0
+		echohl WarningMsg
+		echo "Not writing if it's not a normal buffer (found a ".l:buftype." buffer)."
+		echohl None
+		return 0
+	endif
+
 	" if the branches are the same, no problem
 	let l:current = GitBranchInfoTokens()[0]
 	if l:current==b:git_load_branch
 		exec "write"
 		return 1
 	endif
+
 	" ask what we will do
 	echohl ErrorMsg
 	let l:answer = tolower(input("Loaded from \'".b:git_load_branch."\' branch but saving on \'".l:current."\' branch, confirm [y/n]? ","n"))
 	echohl None
 	let l:msg = "File ".(l:answer=="y" ? "" : "NOT ")."saved on branch \'".l:current."\'."
+
 	" ok, save even with different branches
 	if l:answer=="y"
 		exec "write"
 	endif
+
 	" show message
 	echohl WarningMsg
 	echo l:msg
@@ -203,11 +224,11 @@ function GitBranchInfoString()
 endfunction
 
 function GitBranchInfoTokens()
-	if empty(b:git_dir)
+	if !GitBranchInfoCheckGitDir()
 		let s:current = ''
 		return [exists("g:git_branch_status_nogit") ? g:git_branch_status_nogit : "No git."]
 	endif
-	if !filereadable(b:git_dir."/HEAD")
+	if !GitBranchInfoCheckReadable()
 		let s:current = ''
 		return [s:current,[],[]]
 	endif
