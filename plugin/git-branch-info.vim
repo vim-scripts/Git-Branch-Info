@@ -9,12 +9,12 @@
 " This plugin show branches information on the status line.
 " To install, just put this file on ~/.vim/plugins and set your status line:
 "
-" :set statusline=%{GitBranchInfoString}
+" :set statusline=%{GitBranchInfoString()}
 "
 " Of course you can append this configuration to an existing one and make all 
 " the customization you want on the status line, like:
 "
-" :set statusline=%#ErrorMsg#%{GitBranchInfoString}%#StatusLine#
+" :set statusline=%#ErrorMsg#%{GitBranchInfoString()}%#StatusLine#
 "
 " The command above will show the Git branches info on the same color as the
 " error messages. You can choose any color scheme you want to. Use
@@ -45,6 +45,10 @@
 " Ignore the remote branches. If you don't want information about them, this can
 " make things works faster.
 "
+" let g:git_branch_check_write=<something>
+" Check the current branch if it's the same branch where the file was loaded, 
+" before saving the file.
+"
 " If you want to make your own customizations, you can use the GitBranchInfoTokens()
 " function. It returns an array with the current branch as the first element and
 " another array with the other branches as the second element, like:
@@ -67,7 +71,10 @@ let b:git_dir	= ""
 let b:git_load_branch = ""
 
 autocmd BufEnter * call GitBranchInfoInit()
-autocmd BufWriteCmd * call GitBranchInfoWriteCheck()
+
+if exists("g:git_branch_check_write")
+	autocmd BufWriteCmd * call GitBranchInfoWriteCheck()
+endif	
 
 function GitBranchInfoCheckGitDir()
 	return exists("b:git_dir") && !empty(b:git_dir)
