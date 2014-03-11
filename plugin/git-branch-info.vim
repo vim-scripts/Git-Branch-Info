@@ -2,7 +2,7 @@
 " Git branch info
 " Last change: March 20 2010
 " Version> 0.1.5
-" Maintainer: Eustáquio 'TaQ' Rangel
+" Maintainer: Eustï¿½quio 'TaQ' Rangel
 " License: GPL
 " URL: git://github.com/taq/vim-git-branch-info.git
 "
@@ -235,18 +235,15 @@ function! s:GitBranchInfoInit()
 endfunction
 
 function! s:GitBranchInfoFindDir()
-	let l:bufname	= getcwd()."/".expand("%:t")
-	let l:buflist	= strlen(l:bufname)>0 ? split(l:bufname,"/") : [""]
-	let l:prefix	= l:bufname =~ "^/" ? "/" : ""
-	let b:gbi_git_dir	= ""
-	while len(l:buflist) > 0
-		let l:path = l:prefix.join(l:buflist,"/").l:prefix.".git"
-		if !empty(finddir(l:path))
-			let b:gbi_git_dir = l:path
-			break
-		endif
-		call remove(l:buflist,-1)
-	endwhile
+	let b:gbi_git_dir = ""
+	let l:bufname = getcwd()
+	let l:path = finddir(".git",l:bufname.";")
+	if has("win32") || has("win32unix")
+		let l:path = substitute(l:path, "\\", "/", "g")
+	endif
+	if isdirectory(l:path)
+		let b:gbi_git_dir = l:path
+	endif
 	return b:gbi_git_dir
 endfunction
 
