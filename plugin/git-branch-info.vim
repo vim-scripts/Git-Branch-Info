@@ -152,7 +152,7 @@ endfunction
 " *****************************************************************************
 " functions called from menu
 " *****************************************************************************
-function! <SID>:GitBranchInfoCheckout(branch)
+function! <SID>GitBranchInfoCheckout(branch)
 	let l:tokens	= GitBranchInfoTokens()
 	let l:checkout	= "git\ checkout\ ".a:branch 
 	let l:where		= substitute(b:gbi_git_dir,".git$","","")
@@ -161,7 +161,7 @@ function! <SID>:GitBranchInfoCheckout(branch)
 	call s:GitBranchInfoRenewMenu(l:tokens[0],l:tokens[1],l:tokens[2])
 endfunction
 
-function! <SID>:GitBranchInfoFetch(remote)
+function! <SID>GitBranchInfoFetch(remote)
 	let l:tokens	= GitBranchInfoTokens()
 	let l:fetch		=  "git\ fetch\ ".a:remote
 	let l:where		= substitute(b:gbi_git_dir,".git$","","")
@@ -271,7 +271,7 @@ function! s:GitBranchInfoShowMenu(current,heads,remotes)
 	let l:locals	= sort(extend(l:current,l:heads))
 	for l:branch in l:locals
 		let l:moption	= (l:branch==l:compare ? "Working\\ \\on\\ " : "Checkout\\ ").l:branch
-		let l:mcom		= (l:branch==l:compare ? ":echo 'Already\ on\ branch\ \''".l:branch."\''.'<CR>" : "call <SID>:GitBranchInfoCheckout('".l:branch."')<CR><CR>")
+		let l:mcom		= (l:branch==l:compare ? ":echo 'Already\ on\ branch\ \''".l:branch."\''.'<CR>" : "call <SID>GitBranchInfoCheckout('".l:branch."')<CR><CR>")
 		exe ":menu <silent> Plugin.Git\\ Info.".l:moption." :".l:mcom
 	endfor
 	exe ":menu <silent> Plugin.Git\\ Info.-Local- :"
@@ -282,7 +282,7 @@ function! s:GitBranchInfoShowMenu(current,heads,remotes)
 			continue
 		endif
 		let l:lastone = l:tokens[0]
-		exe "menu <silent> Plugin.Git\\ Info.Fetch\\ ".l:tokens[0]." :call <SID>:GitBranchInfoFetch('".l:tokens[0]."')<CR><CR>"
+		exe "menu <silent> Plugin.Git\\ Info.Fetch\\ ".l:tokens[0]." :call <SID>GitBranchInfoFetch('".l:tokens[0]."')<CR><CR>"
 	endfor
 endfunction
 
